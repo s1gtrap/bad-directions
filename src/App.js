@@ -119,6 +119,7 @@ function App() {
           onKeyUp={(e) => {
             if (e.key == "Enter") {
               setChain([...chain, newLang.current.value]);
+              newLang.current.value = "";
             }
           }}
           size={2}
@@ -127,6 +128,7 @@ function App() {
           onClick={() => {
             console.log(newLang.current.value);
             setChain([...chain, newLang.current.value]);
+            newLang.current.value = "";
           }}
         >
           add
