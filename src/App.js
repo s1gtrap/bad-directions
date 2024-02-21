@@ -105,13 +105,13 @@ function App() {
       <div>
         {chain.map((l, i) => {
           return (
-            <>
+            <span key={i}>
               <input value={l} disabled={true} size={2} />
               <button onClick={() => setChain(chain.filter((l, j) => i !== j))}>
                 del
               </button>
               {" >> "}
-            </>
+            </span>
           );
         })}
         <input
