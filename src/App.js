@@ -48,18 +48,25 @@ function App() {
   return (
     <>
       <div>
+        {"source: "}
         <input
           onChange={async (e) => {
             const r = await provider.search({ query: e.target.value });
-            console.log(r);
             setSourceResults(r);
           }}
         />
+        {source && <>{` ${source.x}, ${source.y}`}</>}
         <ul>
           {sourceResults.map((r, i) => {
             return (
               <li key={i}>
-                <a href="#" onClick={() => setSource(r)}>
+                <a
+                  href="#"
+                  onClick={() => {
+                    setSourceResults([]);
+                    setSource(r);
+                  }}
+                >
                   {r.label}
                 </a>
               </li>
@@ -68,6 +75,7 @@ function App() {
         </ul>
       </div>
       <div>
+        {"target: "}
         <input
           onChange={async (e) => {
             const r = await provider.search({ query: e.target.value });
@@ -75,11 +83,18 @@ function App() {
             setTargetResults(r);
           }}
         />
+        {target && <>{` ${target.x}, ${target.y}`}</>}
         <ul>
           {targetResults.map((r, i) => {
             return (
               <li key={i}>
-                <a href="#" onClick={() => setTarget(r)}>
+                <a
+                  href="#"
+                  onClick={() => {
+                    setTargetResults([]);
+                    setTarget(r);
+                  }}
+                >
                   {r.label}
                 </a>
               </li>
