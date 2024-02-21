@@ -1,6 +1,6 @@
 import "./App.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 
 function App() {
@@ -43,6 +43,8 @@ function App() {
       });
     })();
   }, [source, target]);
+  let [chain, setChain] = useState([]);
+  const newLang = useRef(null);
   return (
     <>
       <div>
@@ -84,6 +86,36 @@ function App() {
             );
           })}
         </ul>
+      </div>
+      <div>
+        {chain.map((l, i) => {
+          return (
+            <>
+              <input value={l} disabled={true} size={2} />
+              <button onClick={() => setChain(chain.filter((l, j) => i !== j))}>
+                del
+              </button>
+              {" >> "}
+            </>
+          );
+        })}
+        <input
+          ref={newLang}
+          onKeyUp={(e) => {
+            if (e.key == "Enter") {
+              setChain([...chain, newLang.current.value]);
+            }
+          }}
+          size={2}
+        />
+        <button
+          onClick={() => {
+            console.log(newLang.current.value);
+            setChain([...chain, newLang.current.value]);
+          }}
+        >
+          add
+        </button>
       </div>
     </>
   );
