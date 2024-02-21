@@ -16,6 +16,7 @@ function App() {
   //     }
   //   });
   // });
+  const osrmTextInstructions = require("osrm-text-instructions")("v5");
 
   const center = [37.7833, -122.4167];
 
@@ -31,9 +32,15 @@ function App() {
     (async () => {
       console.log(`[${source.x}, ${source.y}] -> [${target.x}, ${target.y}]`);
       const res = await fetch(
-        `http://router.project-osrm.org/route/v1/driving/${source.x},${source.y};${target.x},${target.y}`,
+        `http://router.project-osrm.org/route/v1/driving/${source.x},${source.y};${target.x},${target.y}?overview=false&steps=true`,
       );
-      console.log(await res.json());
+      const response = (await res.json()).routes[0];
+      response.legs.forEach(function (leg) {
+        console.log("leg", leg);
+        leg.steps.forEach(function (step) {
+          console.log(osrmTextInstructions.compile("en", step, {}));
+        });
+      });
     })();
   }, [source, target]);
   return (
