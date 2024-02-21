@@ -18,16 +18,16 @@ function App() {
   // });
   const osrmTextInstructions = require("osrm-text-instructions")("v5");
 
-  const center = [37.7833, -122.4167];
-
   const provider = new OpenStreetMapProvider();
 
   let [sourceResults, setSourceResults] = useState([]);
   let [targetResults, setTargetResults] = useState([]);
   let [source, setSource] = useState(null);
   let [target, setTarget] = useState(null);
+  let [chain, setChain] = useState([]);
+  let [legs, setLegs] = useState([]);
   useEffect(() => {
-    if (!source || !target) return;
+    if (!source || !target || !chain.length) return;
 
     (async () => {
       console.log(`[${source.x}, ${source.y}] -> [${target.x}, ${target.y}]`);
@@ -35,15 +35,37 @@ function App() {
         `http://router.project-osrm.org/route/v1/driving/${source.x},${source.y};${target.x},${target.y}?overview=false&steps=true`,
       );
       const response = (await res.json()).routes[0];
-      response.legs.forEach(function (leg) {
-        console.log("leg", leg);
-        leg.steps.forEach(function (step) {
-          console.log(osrmTextInstructions.compile("en", step, {}));
+      const legs = response.legs.map(function (leg) {
+        return leg.steps.map(function (step) {
+          return [[chain[0], osrmTextInstructions.compile(chain[0], step, {})]];
         });
       });
+      setLegs(legs);
     })();
-  }, [source, target]);
-  let [chain, setChain] = useState([]);
+  }, [source, target, chain]);
+  let [translations, setTranslations] = useState([]);
+  useEffect(() => {
+    (async () => {
+      for (let i = 1; i < chain.length; i++) {
+        for (let j = 0; j < legs.length; j++) {
+          for (let k = 0; k < legs[j].length; k++) {
+            const res = await fetch("http://localhost:5000/translate", {
+              method: "POST",
+              body: JSON.stringify({
+                q: legs[j][k][i - 1][1],
+                source: chain[i - 1],
+                target: chain[i],
+              }),
+              headers: { "Content-Type": "application/json" },
+              mode: "cors",
+            });
+            legs[j][k][i] = [chain[i], (await res.json()).translatedText];
+            setTranslations(legs);
+          }
+        }
+      }
+    })();
+  }, [legs, chain]);
   const newLang = useRef(null);
   return (
     <>
@@ -79,7 +101,6 @@ function App() {
         <input
           onChange={async (e) => {
             const r = await provider.search({ query: e.target.value });
-            console.log(r);
             setTargetResults(r);
           }}
         />
@@ -126,13 +147,23 @@ function App() {
         />
         <button
           onClick={() => {
-            console.log(newLang.current.value);
             setChain([...chain, newLang.current.value]);
             newLang.current.value = "";
           }}
         >
           add
         </button>
+      </div>
+      <div>
+        {translations.map((leg, i) => {
+          return (
+            <div key={i}>
+              {leg.map((step, i) => {
+                return <p key={i}>{step[step.length - 1][1]}</p>;
+              })}
+            </div>
+          );
+        })}
       </div>
     </>
   );
