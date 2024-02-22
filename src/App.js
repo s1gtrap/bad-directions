@@ -6,7 +6,7 @@ import { OpenStreetMapProvider } from "leaflet-geosearch";
 var _ = require("lodash");
 
 async function translate(from, to, text) {
-  const res = await fetch("http://localhost:5000/translate", {
+  const res = await fetch("/translate", {
     method: "POST",
     body: JSON.stringify({
       q: text,
