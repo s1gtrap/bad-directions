@@ -37,7 +37,13 @@ function App() {
       const response = (await res.json()).routes[0];
       const legs = response.legs.map(function (leg) {
         return leg.steps.map(function (step) {
-          return [[chain[0], osrmTextInstructions.compile(chain[0], step, {})]];
+          console.log("step", step);
+          return [
+            [
+              chain[0],
+              `${osrmTextInstructions.compile(chain[0], step, {})} (${step.distance}m)`,
+            ],
+          ];
         });
       });
       setLegs(legs);
