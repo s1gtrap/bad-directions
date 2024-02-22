@@ -3,21 +3,25 @@ import "./App.css";
 import React, { useEffect, useRef, useState } from "react";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 
-function App() {
-  // useEffect(() => {
-  //   const map = this.mapRef.current.leafletElement;
-  //   const searchControl = new ELG.Geosearch().addTo(map);
-  //   const results = new L.LayerGroup().addTo(map);
-  //
-  //   searchControl.on("results", function (data) {
-  //     results.clearLayers();
-  //     for (let i = data.results.length - 1; i >= 0; i--) {
-  //       results.addLayer(L.marker(data.results[i].latlng));
-  //     }
-  //   });
-  // });
-  const osrmTextInstructions = require("osrm-text-instructions")("v5");
+var _ = require("lodash");
 
+async function translate(from, to, text) {
+  const res = await fetch("http://localhost:5000/translate", {
+    method: "POST",
+    body: JSON.stringify({
+      q: text,
+      source: from,
+      target: to,
+    }),
+    headers: { "Content-Type": "application/json" },
+    mode: "cors",
+  });
+  const body = await res.json();
+  return body.translatedText;
+}
+
+function App() {
+  const osrmTextInstructions = require("osrm-text-instructions")("v5");
   const provider = new OpenStreetMapProvider();
 
   let [sourceResults, setSourceResults] = useState([]);
@@ -27,7 +31,7 @@ function App() {
   let [chain, setChain] = useState([]);
   let [legs, setLegs] = useState([]);
   useEffect(() => {
-    if (!source || !target || !chain.length) return;
+    if (!source || !target || chain.length !== 1) return;
 
     (async () => {
       console.log(`[${source.x}, ${source.y}] -> [${target.x}, ${target.y}]`);
@@ -37,41 +41,56 @@ function App() {
       const response = (await res.json()).routes[0];
       const legs = response.legs.map(function (leg) {
         return leg.steps.map(function (step) {
-          console.log("step", step);
-          return [
-            [
-              chain[0],
-              `${osrmTextInstructions.compile(chain[0], step, {})} (${step.distance}m)`,
-            ],
-          ];
+          return [[chain[0], osrmTextInstructions.compile(chain[0], step, {})]];
         });
       });
       setLegs(legs);
     })();
   }, [source, target, chain]);
   let [translations, setTranslations] = useState([]);
+
+  // reset translations when route or language chain changes
+  useEffect(() => {
+    setTranslations(_.cloneDeep(legs));
+  }, [legs]);
+
+  // translate missing translations
   useEffect(() => {
     (async () => {
+      const newTranslations = _.cloneDeep(translations);
       for (let i = 1; i < chain.length; i++) {
+        if (
+          translations[0][0][i - 1][0] === chain[i - 1] &&
+          translations[0][0][i] &&
+          translations[0][0][i][0] === chain[i]
+        )
+          continue;
         for (let j = 0; j < legs.length; j++) {
           for (let k = 0; k < legs[j].length; k++) {
-            const res = await fetch("http://localhost:5000/translate", {
-              method: "POST",
-              body: JSON.stringify({
-                q: legs[j][k][i - 1][1],
-                source: chain[i - 1],
-                target: chain[i],
-              }),
-              headers: { "Content-Type": "application/json" },
-              mode: "cors",
-            });
-            legs[j][k][i] = [chain[i], (await res.json()).translatedText];
-            setTranslations(legs);
+            if (!translations[j][k][i - 1]) continue;
+            if (
+              translations[j][k][i - 1] &&
+              translations[j][k][i - 1][0] === chain[i - 1] &&
+              translations[j][k][i] &&
+              translations[j][k][i][0] === chain[i]
+            )
+              continue;
+
+            const transText = await translate(
+              chain[i - 1],
+              chain[i],
+              translations[j][k][i - 1][1],
+            );
+
+            newTranslations[j][k][i] = [chain[i], transText];
           }
         }
       }
+
+      if (!_.isEqual(translations, newTranslations))
+        setTranslations(newTranslations);
     })();
-  }, [legs, chain]);
+  }, [translations, chain]);
   const newLang = useRef(null);
   return (
     <>

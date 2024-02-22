@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "leaflet": "^1.9.4",
     "leaflet-geosearch": "^3.11.1",
+    "lodash": "^4.17.21",
     "osrm-text-instructions": "^0.14.1-beta.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -41,7 +42,6 @@
   },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",
-  "devDependencies": {},
   "keywords": [],
   "author": "",
   "license": "ISC"
