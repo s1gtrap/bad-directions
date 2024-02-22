@@ -165,7 +165,7 @@ function App() {
         <input
           ref={newLang}
           onKeyUp={(e) => {
-            if (e.key == "Enter") {
+            if (e.key === "Enter") {
               setChain([...chain, newLang.current.value]);
               newLang.current.value = "";
             }
