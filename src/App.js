@@ -59,7 +59,9 @@ function App() {
     (async () => {
       const newTranslations = _.cloneDeep(translations);
       for (let i = 1; i < chain.length; i++) {
+        if (!translations[0][0][i - 1]) continue;
         if (
+          translations[0][0][i - 1][0] === chain[i - 1] &&
           translations[0][0][i - 1][0] === chain[i - 1] &&
           translations[0][0][i] &&
           translations[0][0][i][0] === chain[i]
