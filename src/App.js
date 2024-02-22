@@ -97,10 +97,10 @@ function App() {
       <div>
         {"source: "}
         <input
-          onChange={async (e) => {
+          onChange={_.debounce(async (e) => {
             const r = await provider.search({ query: e.target.value });
             setSourceResults(r);
-          }}
+          }, 200)}
         />
         {source && <>{` ${source.x}, ${source.y}`}</>}
         <ul>
@@ -124,10 +124,10 @@ function App() {
       <div>
         {"target: "}
         <input
-          onChange={async (e) => {
+          onChange={_.debounce(async (e) => {
             const r = await provider.search({ query: e.target.value });
             setTargetResults(r);
-          }}
+          }, 200)}
         />
         {target && <>{` ${target.x}, ${target.y}`}</>}
         <ul>
