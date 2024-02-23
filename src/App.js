@@ -39,7 +39,10 @@ function App() {
     (async () => {
       console.log(`[${source.x}, ${source.y}] -> [${target.x}, ${target.y}]`);
       const res = await fetch(
-        `http://router.project-osrm.org/route/v1/driving/${source.x},${source.y};${target.x},${target.y}?overview=false&steps=true`,
+        `https://router.project-osrm.org/route/v1/driving/${source.x},${source.y};${target.x},${target.y}?overview=false&steps=true`,
+        {
+          mode: "cors",
+        },
       );
       const response = (await res.json()).routes[0];
       const legs = response.legs.map(function (leg) {
