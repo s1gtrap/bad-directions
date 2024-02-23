@@ -195,6 +195,21 @@ function App() {
         >
           add
         </button>
+        <button
+          disabled={isTranslating}
+          onClick={() => {
+            const code = _.sample(
+              chain.length === 0
+                ? osrmLanguages.supportedCodes
+                : languages.find(
+                    (lang) => lang.code === chain[chain.length - 1],
+                  )?.targets,
+            );
+            setChain([...chain, code]);
+          }}
+        >
+          random
+        </button>
         {isTranslating && " loading..."}
       </div>
       <div>
