@@ -206,14 +206,14 @@ function App() {
                 languages.find((lang) => lang.code === code),
               ])
               .filter(([code, lang]) => !!lang)
-              .map(([code, lang]) => (
-                <span>{` ${lang.name} [${lang.code}]`}</span>
+              .map(([code, lang], i) => (
+                <span key={i}>{` ${lang.name} [${lang.code}]`}</span>
               ))
           : languages
               .find((lang) => lang.code === chain[chain.length - 1])
-              ?.targets.map((code) => {
+              ?.targets.map((code, i) => {
                 const lang = languages.find((lang) => lang.code === code);
-                return <span>{` ${lang.name} [${lang.code}]`}</span>;
+                return <span key={i}>{` ${lang.name} [${lang.code}]`}</span>;
               })}
       </div>
       <div className={isTranslating ? "loading" : ""}>
