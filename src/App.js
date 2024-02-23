@@ -54,6 +54,7 @@ function App() {
     })();
   }, [source, target, chain]);
   let [translations, setTranslations] = useState([]);
+  let [isTranslating, setIsTranslating] = useState([]);
 
   // reset translations when route or language chain changes
   useEffect(() => {
@@ -62,6 +63,10 @@ function App() {
 
   // translate missing translations
   useEffect(() => {
+    setIsTranslating(true);
+    setSourceResults([]);
+    setTargetResults([]);
+
     (async () => {
       const newTranslations = _.cloneDeep(translations);
       for (let i = 1; i < chain.length; i++) {
@@ -97,6 +102,8 @@ function App() {
 
       if (!_.isEqual(translations, newTranslations))
         setTranslations(newTranslations);
+
+      setIsTranslating(false);
     })();
   }, [translations, chain]);
   const newLang = useRef(null);
@@ -105,6 +112,7 @@ function App() {
       <div>
         {"source: "}
         <input
+          disabled={isTranslating}
           onChange={_.debounce(async (e) => {
             const r = await provider.search({ query: e.target.value });
             setSourceResults(r);
@@ -132,6 +140,7 @@ function App() {
       <div>
         {"target: "}
         <input
+          disabled={isTranslating}
           onChange={_.debounce(async (e) => {
             const r = await provider.search({ query: e.target.value });
             setTargetResults(r);
@@ -161,7 +170,10 @@ function App() {
           return (
             <span key={i}>
               <input value={l} disabled={true} size={2} />
-              <button onClick={() => setChain(chain.filter((l, j) => i !== j))}>
+              <button
+                disabled={isTranslating}
+                onClick={() => setChain(chain.filter((l, j) => i !== j))}
+              >
                 del
               </button>
               {" >> "}
@@ -170,6 +182,7 @@ function App() {
         })}
         <input
           ref={newLang}
+          disabled={isTranslating}
           onKeyUp={(e) => {
             if (e.key === "Enter") {
               setChain([...chain, newLang.current.value]);
@@ -179,6 +192,7 @@ function App() {
           size={2}
         />
         <button
+          disabled={isTranslating}
           onClick={() => {
             setChain([...chain, newLang.current.value]);
             newLang.current.value = "";
@@ -186,8 +200,9 @@ function App() {
         >
           add
         </button>
+        {isTranslating && " loading..."}
       </div>
-      <div>
+      <div className={isTranslating ? "loading" : ""}>
         {translations.map((leg, i) => {
           return (
             <div key={i}>
