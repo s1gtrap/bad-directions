@@ -92,31 +92,11 @@ function App() {
       const newTranslations = _.cloneDeep(translations);
       for (let i = 1; i < chain.length; i++) {
         if (!translations[0][0][i - 1]) continue;
-        if (
-          translations[0][0][i - 1][0] === chain[i - 1] &&
-          translations[0][0][i - 1][0] === chain[i - 1] &&
-          translations[0][0][i] &&
-          translations[0][0][i][0] === chain[i]
-        )
-          continue;
         for (let j = 0; j < legs.length; j++) {
+          const input = translations[j].map((leg) => leg[i - 1][1]);
+          const output = await translate(chain[i - 1], chain[i], input);
           for (let k = 0; k < legs[j].length; k++) {
-            if (!translations[j][k][i - 1]) continue;
-            if (
-              translations[j][k][i - 1] &&
-              translations[j][k][i - 1][0] === chain[i - 1] &&
-              translations[j][k][i] &&
-              translations[j][k][i][0] === chain[i]
-            )
-              continue;
-
-            const transText = await translate(
-              chain[i - 1],
-              chain[i],
-              translations[j][k][i - 1][1],
-            );
-
-            newTranslations[j][k][i] = [chain[i], transText];
+            newTranslations[j][k][i] = [chain[i], output[k]];
           }
         }
       }
