@@ -5,27 +5,48 @@ import { OpenStreetMapProvider } from "leaflet-geosearch";
 
 var _ = require("lodash");
 
-async function translate(from, to, text) {
-  const res = await fetch(
-    "https://libretranslate.eownerdead.dedyn.io/translate",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        q: text,
-        source: from,
-        target: to,
-      }),
-      headers: { "Content-Type": "application/json" },
-      mode: "cors",
-    },
+function fetchLT(resource, options) {
+  return fetch(
+    `https://libretranslate.eownerdead.dedyn.io${resource}`,
+    options,
   );
+}
+
+async function fetchLanguages() {
+  const res = await fetchLT("/languages", {
+    method: "GET",
+    mode: "cors",
+  });
+  return await res.json();
+}
+
+async function translate(from, to, text) {
+  const res = await fetchLT("/translate", {
+    method: "POST",
+    body: JSON.stringify({
+      q: text,
+      source: from,
+      target: to,
+    }),
+    headers: { "Content-Type": "application/json" },
+    mode: "cors",
+  });
   const body = await res.json();
   return body.translatedText;
 }
 
 function App() {
   const osrmTextInstructions = require("osrm-text-instructions")("v5");
+  const osrmLanguages = require("osrm-text-instructions/languages");
   const provider = new OpenStreetMapProvider();
+
+  let [languages, setLanguages] = useState([]);
+  useEffect(() => {
+    (async () => {
+      const languages = await fetchLanguages();
+      setLanguages(languages);
+    })();
+  }, []);
 
   let [sourceResults, setSourceResults] = useState([]);
   let [targetResults, setTargetResults] = useState([]);
@@ -201,6 +222,25 @@ function App() {
           add
         </button>
         {isTranslating && " loading..."}
+      </div>
+      <div>
+        Available languages:
+        {chain.length === 0
+          ? osrmLanguages.supportedCodes
+              .map((code) => [
+                code,
+                languages.find((lang) => lang.code === code),
+              ])
+              .filter(([code, lang]) => !!lang)
+              .map(([code, lang]) => (
+                <span>{` ${lang.name} [${lang.code}]`}</span>
+              ))
+          : languages
+              .find((lang) => lang.code === chain[chain.length - 1])
+              ?.targets.map((code) => {
+                const lang = languages.find((lang) => lang.code === code);
+                return <span>{` ${lang.name} [${lang.code}]`}</span>;
+              })}
       </div>
       <div className={isTranslating ? "loading" : ""}>
         {translations.map((leg, i) => {
