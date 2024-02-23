@@ -6,16 +6,19 @@ import { OpenStreetMapProvider } from "leaflet-geosearch";
 var _ = require("lodash");
 
 async function translate(from, to, text) {
-  const res = await fetch("/translate", {
-    method: "POST",
-    body: JSON.stringify({
-      q: text,
-      source: from,
-      target: to,
-    }),
-    headers: { "Content-Type": "application/json" },
-    mode: "cors",
-  });
+  const res = await fetch(
+    "https://libretranslate.eownerdead.dedyn.io/translate",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        q: text,
+        source: from,
+        target: to,
+      }),
+      headers: { "Content-Type": "application/json" },
+      mode: "cors",
+    },
+  );
   const body = await res.json();
   return body.translatedText;
 }
