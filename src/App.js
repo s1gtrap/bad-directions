@@ -117,7 +117,7 @@ function App() {
           onChange={_.debounce(async (e) => {
             const r = await provider.search({ query: e.target.value });
             setSourceResults(r);
-          }, 200)}
+          }, 300)}
         />
         {source && <>{` ${source.x}, ${source.y}`}</>}
         <ul>
