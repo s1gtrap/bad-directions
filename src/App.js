@@ -191,12 +191,6 @@ function App() {
           return (
             <span key={i}>
               <input value={l} disabled={true} size={2} />
-              <button
-                disabled={isTranslating}
-                onClick={() => setChain(chain.filter((l, j) => i !== j))}
-              >
-                del
-              </button>
               {" >> "}
             </span>
           );
