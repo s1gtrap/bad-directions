@@ -50,8 +50,6 @@ function App() {
     })();
   }, []);
 
-  let [sourceResults, setSourceResults] = useState([]);
-  let [targetResults, setTargetResults] = useState([]);
   let [source, setSource] = useState(null);
   let [target, setTarget] = useState(null);
   let [chain, setChain] = useState([]);
@@ -87,8 +85,6 @@ function App() {
   // translate missing translations
   useEffect(() => {
     setIsTranslating(true);
-    setSourceResults([]);
-    setTargetResults([]);
 
     (async () => {
       const newTranslations = _.cloneDeep(translations);
@@ -113,60 +109,28 @@ function App() {
   return (
     <div className="container mx-auto">
       <div>
-        {"source: "}
-        <input
-          disabled={isTranslating}
-          onChange={_.debounce(async (e) => {
-            const r = await provider.search({ query: e.target.value });
-            setSourceResults(r);
-          }, 300)}
+        <Input
+          placeholder="Choose startup point"
+          onChange={async (s) => {
+            const results = await provider.search({ query: s });
+            return results.map((r) => [r.label, r]);
+          }}
+          onSelect={(label, coords) => {
+            setSource(coords);
+          }}
         />
-        {source && <>{` ${source.x}, ${source.y}`}</>}
-        <ul>
-          {sourceResults.map((r, i) => {
-            return (
-              <li key={i}>
-                <a
-                  href="#"
-                  onClick={() => {
-                    setSourceResults([]);
-                    setSource(r);
-                  }}
-                >
-                  {r.label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
       </div>
       <div>
-        {"target: "}
-        <input
-          disabled={isTranslating}
-          onChange={_.debounce(async (e) => {
-            const r = await provider.search({ query: e.target.value });
-            setTargetResults(r);
-          }, 200)}
+        <Input
+          placeholder="Choose destination"
+          onChange={async (s) => {
+            const results = await provider.search({ query: s });
+            return results.map((r) => [r.label, r]);
+          }}
+          onSelect={(label, coords) => {
+            setTarget(coords);
+          }}
         />
-        {target && <>{` ${target.x}, ${target.y}`}</>}
-        <ul>
-          {targetResults.map((r, i) => {
-            return (
-              <li key={i}>
-                <a
-                  href="#"
-                  onClick={() => {
-                    setTargetResults([]);
-                    setTarget(r);
-                  }}
-                >
-                  {r.label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
       </div>
       <div>
         {chain.map((l, i) => {
@@ -244,13 +208,6 @@ function App() {
           );
         })}
       </div>
-      <Input
-        placeholder="Choose startup point"
-        onChange={async (s) => {
-          const results = await provider.search({ query: s });
-          return results.map((r) => r.label);
-        }}
-      />
     </div>
   );
 }
