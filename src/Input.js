@@ -19,21 +19,28 @@ export function Input(props) {
             className="block w-full rounded-md border-0 ring-1 py-1.5 px-2 list-none z-10 bg-white absolute"
             role="list"
           >
-            {results.map((r, i) => {
-              return (
-                <li key={i}>
-                  <a
-                    href="#"
-                    className="w-full block hover:bg-slate-200"
-                    onClick={() => {
-                      setResults(null);
-                    }}
-                  >
-                    {r}
-                  </a>
-                </li>
-              );
-            })}
+            {results.length > 0 ? (
+              results.map(([r, k], i) => {
+                return (
+                  <li key={i}>
+                    <a
+                      href="#"
+                      className="w-full block hover:bg-slate-200"
+                      onClick={() => {
+                        if (props.onSelect) {
+                          props.onSelect(r, k);
+                        }
+                        setResults(null);
+                      }}
+                    >
+                      {r}
+                    </a>
+                  </li>
+                );
+              })
+            ) : (
+              <p className="text-slate-400">No results found</p>
+            )}
           </ul>
         )}
       </div>
