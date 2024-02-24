@@ -3,6 +3,8 @@ import "./App.css";
 import React, { useEffect, useRef, useState } from "react";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 
+import { Input } from "./Input";
+
 var _ = require("lodash");
 
 function fetchLT(resource, options) {
@@ -242,6 +244,13 @@ function App() {
           );
         })}
       </div>
+      <Input
+        placeholder="Choose startup point"
+        onChange={async (s) => {
+          const results = await provider.search({ query: s });
+          return results.map((r) => r.label);
+        }}
+      />
     </div>
   );
 }

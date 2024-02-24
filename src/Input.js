@@ -1,0 +1,43 @@
+import React, { useEffect, useRef, useState } from "react";
+
+export function Input(props) {
+  const [results, setResults] = useState(null);
+  return (
+    <>
+      <input
+        className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        placeholder={props.placeholder}
+        onChange={async (e) => {
+          if (props.onChange) {
+            setResults(await props.onChange(e.target.value));
+          }
+        }}
+      />
+      <div className="relative">
+        {results && (
+          <ul
+            className="block w-full rounded-md border-0 ring-1 py-1.5 px-2 list-none z-10 bg-white absolute"
+            role="list"
+          >
+            {results.map((r, i) => {
+              return (
+                <li key={i}>
+                  <a
+                    href="#"
+                    className="w-full block hover:bg-slate-200"
+                    onClick={() => {
+                      setResults(null);
+                    }}
+                  >
+                    {r}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+      <p>Lorem ipsum</p>
+    </>
+  );
+}
