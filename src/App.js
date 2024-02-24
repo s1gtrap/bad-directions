@@ -109,7 +109,7 @@ function App() {
   }, [translations, chain]);
   const newLang = useRef(null);
   return (
-    <>
+    <div className="container mx-auto">
       <div>
         {"source: "}
         <input
@@ -242,7 +242,7 @@ function App() {
           );
         })}
       </div>
-    </>
+    </div>
   );
 }
 
