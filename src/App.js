@@ -109,6 +109,11 @@ function App() {
   return (
     <div className="container mx-auto">
       <div>
+        <p class="text-lg font-thin">
+          <b>Step 1)</b> Select a route
+        </p>
+      </div>
+      <div>
         <Input
           placeholder="Choose point of origin"
           onChange={async (s) => {
@@ -145,6 +150,11 @@ function App() {
         />
       </div>
       <div>
+        <p class="text-lg font-thin">
+          <b>Step 2)</b> Pick a source language
+        </p>
+      </div>
+      <div>
         {chain.map((l, i) => {
           return (
             <span key={i}>
@@ -155,10 +165,9 @@ function App() {
         })}
         {isTranslating && " loading..."}
       </div>
-      <div>
+      <div className="my-2">
         {chain.length === 0 ? (
           <>
-            <div>Starting language:</div>
             {osrmLanguages.supportedCodes
               .map((code) => [
                 code,
@@ -169,7 +178,7 @@ function App() {
                 <button
                   key={i}
                   disabled={isTranslating}
-                  className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-thin py-2 px-4 m-1 rounded"
+                  className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-thin py-1.5 px-2.5 m-0.5 rounded"
                   onClick={() => {
                     setChain([...chain, code]);
                   }}
@@ -178,7 +187,6 @@ function App() {
           </>
         ) : (
           <>
-            <div>Add language:</div>
             {languages
               .find((lang) => lang.code === chain[chain.length - 1])
               ?.targets.map((code, i) => {
@@ -187,7 +195,7 @@ function App() {
                   <button
                     key={i}
                     disabled={isTranslating}
-                    className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-thin py-2 px-4 m-1 rounded"
+                    className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-thin py-1.5 px-2.5 m-0.5 rounded"
                     onClick={() => {
                       setChain([...chain, code]);
                     }}
@@ -198,7 +206,7 @@ function App() {
         )}
         <button
           disabled={isTranslating}
-          className="bg-red-500 hover:bg-red-700 disabled:bg-red-300 text-white font-thin py-2 px-4 m-1 rounded"
+          className="bg-red-500 hover:bg-red-700 disabled:bg-red-300 text-white font-thin py-1.5 px-2.5 m-0.5 rounded"
           onClick={() => {
             const code = _.sample(
               chain.length === 0
