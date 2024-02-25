@@ -130,6 +130,12 @@ function App() {
         <Input
           placeholder="Choose destination"
           onChange={async (s) => {
+            if (s === "") {
+              return null;
+            }
+            if (s.trim() === "") {
+              return [];
+            }
             const results = await provider.search({ query: s });
             return results.map((r) => [r.label, r]);
           }}
