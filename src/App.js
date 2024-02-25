@@ -149,32 +149,56 @@ function App() {
           return (
             <span key={i}>
               <input value={l} disabled={true} size={2} />
-              {" >> "}
+              {" > "}
             </span>
           );
         })}
-        <input
-          ref={newLang}
-          disabled={isTranslating}
-          onKeyUp={(e) => {
-            if (e.key === "Enter") {
-              setChain([...chain, newLang.current.value]);
-              newLang.current.value = "";
-            }
-          }}
-          size={2}
-        />
+        {isTranslating && " loading..."}
+      </div>
+      <div>
+        {chain.length === 0 ? (
+          <>
+            <div>Starting language:</div>
+            {osrmLanguages.supportedCodes
+              .map((code) => [
+                code,
+                languages.find((lang) => lang.code === code),
+              ])
+              .filter(([code, lang]) => !!lang)
+              .map(([code, lang], i) => (
+                <button
+                  key={i}
+                  disabled={isTranslating}
+                  className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-thin py-2 px-4 m-1 rounded"
+                  onClick={() => {
+                    setChain([...chain, code]);
+                  }}
+                >{` ${lang.name} [${lang.code}]`}</button>
+              ))}
+          </>
+        ) : (
+          <>
+            <div>Add language:</div>
+            {languages
+              .find((lang) => lang.code === chain[chain.length - 1])
+              ?.targets.map((code, i) => {
+                const lang = languages.find((lang) => lang.code === code);
+                return (
+                  <button
+                    key={i}
+                    disabled={isTranslating}
+                    className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-thin py-2 px-4 m-1 rounded"
+                    onClick={() => {
+                      setChain([...chain, code]);
+                    }}
+                  >{` ${lang.name} [${lang.code}]`}</button>
+                );
+              })}
+          </>
+        )}
         <button
           disabled={isTranslating}
-          onClick={() => {
-            setChain([...chain, newLang.current.value]);
-            newLang.current.value = "";
-          }}
-        >
-          add
-        </button>
-        <button
-          disabled={isTranslating}
+          className="bg-red-500 hover:bg-red-700 disabled:bg-red-300 text-white font-thin py-2 px-4 m-1 rounded"
           onClick={() => {
             const code = _.sample(
               chain.length === 0
@@ -186,42 +210,8 @@ function App() {
             setChain([...chain, code]);
           }}
         >
-          random
+          Random
         </button>
-        {isTranslating && " loading..."}
-      </div>
-      <div>
-        Available languages:
-        {chain.length === 0
-          ? osrmLanguages.supportedCodes
-              .map((code) => [
-                code,
-                languages.find((lang) => lang.code === code),
-              ])
-              .filter(([code, lang]) => !!lang)
-              .map(([code, lang], i) => (
-                <button
-                  key={i}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-thin py-2 px-4 m-1 rounded"
-                  onClick={() => {
-                    setChain([...chain, code]);
-                  }}
-                >{` ${lang.name} [${lang.code}]`}</button>
-              ))
-          : languages
-              .find((lang) => lang.code === chain[chain.length - 1])
-              ?.targets.map((code, i) => {
-                const lang = languages.find((lang) => lang.code === code);
-                return (
-                  <button
-                    key={i}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-thin py-2 px-4 m-1 rounded"
-                    onClick={() => {
-                      setChain([...chain, code]);
-                    }}
-                  >{` ${lang.name} [${lang.code}]`}</button>
-                );
-              })}
       </div>
       <div className={isTranslating ? "loading" : ""}>
         {translations.map((leg, i) => {
