@@ -109,7 +109,7 @@ function App() {
   return (
     <div className="container mx-auto">
       <div>
-        <p class="text-lg font-thin">
+        <p className="text-lg font-thin">
           <b>Step 1)</b> Select a route
         </p>
       </div>
@@ -150,7 +150,7 @@ function App() {
         />
       </div>
       <div>
-        <p class="text-lg font-thin">
+        <p className="text-lg font-thin">
           <b>Step 2)</b> Pick a source language
         </p>
       </div>
