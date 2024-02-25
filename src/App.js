@@ -112,6 +112,12 @@ function App() {
         <Input
           placeholder="Choose startup point"
           onChange={async (s) => {
+            if (s === "") {
+              return null;
+            }
+            if (s.trim() === "") {
+              return [];
+            }
             const results = await provider.search({ query: s });
             return results.map((r) => [r.label, r]);
           }}
