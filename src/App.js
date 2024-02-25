@@ -110,7 +110,7 @@ function App() {
     <div className="container mx-auto">
       <div>
         <Input
-          placeholder="Choose startup point"
+          placeholder="Choose point of origin"
           onChange={async (s) => {
             if (s === "") {
               return null;
