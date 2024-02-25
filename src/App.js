@@ -200,13 +200,27 @@ function App() {
               ])
               .filter(([code, lang]) => !!lang)
               .map(([code, lang], i) => (
-                <span key={i}>{` ${lang.name} [${lang.code}]`}</span>
+                <button
+                  key={i}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-thin py-2 px-4 m-1 rounded"
+                  onClick={() => {
+                    setChain([...chain, code]);
+                  }}
+                >{` ${lang.name} [${lang.code}]`}</button>
               ))
           : languages
               .find((lang) => lang.code === chain[chain.length - 1])
               ?.targets.map((code, i) => {
                 const lang = languages.find((lang) => lang.code === code);
-                return <span key={i}>{` ${lang.name} [${lang.code}]`}</span>;
+                return (
+                  <button
+                    key={i}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-thin py-2 px-4 m-1 rounded"
+                    onClick={() => {
+                      setChain([...chain, code]);
+                    }}
+                  >{` ${lang.name} [${lang.code}]`}</button>
+                );
               })}
       </div>
       <div className={isTranslating ? "loading" : ""}>
