@@ -8,10 +8,7 @@ import { Input } from "./Input";
 var _ = require("lodash");
 
 function fetchLT(resource, options) {
-  return fetch(
-    `https://libretranslate.eownerdead.dedyn.io${resource}`,
-    options,
-  );
+  return fetch(`https://libretranslate.tan.ge${resource}`, options);
 }
 
 async function fetchLanguages() {
